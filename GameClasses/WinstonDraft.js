@@ -8,13 +8,16 @@ class WinstonDraft{
   #players;
   #setMap;
   #cardSlots;
+  #cardsInPacks;
 
   constructor(players, sets){
 
+    this.#deck = [];
     this.#cardSlots = [[],[],[]];
     this.#setMap = new Set();
     this.#players = players;
     this.#packs = [];
+    this.#cardsInPacks = 90; //Hardcode different number for sets like Double Masters? 
 
     //Generate the card pools for each set.
     for(let set of sets){
@@ -78,12 +81,62 @@ class WinstonDraft{
       this.#packs.push(new Pack(this.#setMap.get(set)));
       
     }
+
+    this.#shuffle();
+
+    this.#cardSlots[0].push(this.#deck.pop());
+    this.#cardSlots[1].push(this.#deck.pop());
+    this.#cardSlots[2].push(this.#deck.pop());
     
   }
 
-  #Shuffle(){
+  #shuffle(){
 
+    while(this.#cardsInPacks > 0){
+
+      //Likelyhood of this repeatedly pinging empty packs towards the end?
+      let card = this.#packs[Math.floor(Math.random()*6)].pickAtRandom();
+
+      if(card !== null){
+
+        this.#cardsInPacks--;
+        this.#deck.push(card);
+        
+      }
+          
+    }
     
+  }
+
+  pass(position){
+
+    if(position >= 2){
+
+      return this.#deck.pop();
+      
+    }else{
+
+      this.#cardSlots[position].push(this.#deck.pop());
+      return null;
+      
+    }
+    
+  }
+
+  pick(position){
+
+    if(position < 3){
+
+      let picks = Array.from(this.#cardSlots[position]) ;
+      this.#cardSlots[position] = [];
+      this.#cardSlots[position].push(this.#deck.pop());
+      return picks;
+      
+    }else{
+
+      return null;
+      
+    }
     
   }
   

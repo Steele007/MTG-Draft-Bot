@@ -1,8 +1,11 @@
 class WinstonPlayer extends Player{
 
-  constructor(){
+  #picks;
+  
+  constructor(user){
 
-    //to do.
+    super(user);
+    this.#picks = [];
     
   }
   
