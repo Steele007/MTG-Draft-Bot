@@ -64,5 +64,25 @@ class Pack{
     //Fill later.
     
   }
+
+  pickAtRandom(){
+
+    if(this.#cards.length === 0){
+
+      return null;
+      
+    }else{
+
+      Math.floor(Math.random() * this.#cards.size);
+
+      let pick = Array.from(this.#cards.values());
+
+      this.#cards.delete(pick);
+      
+      return pick;
+      
+    }
+    
+  }
   
 }

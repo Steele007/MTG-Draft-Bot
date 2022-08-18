@@ -1,4 +1,4 @@
-class CardPool {
+export class CardPool {
 
   #sortedPool;
 
