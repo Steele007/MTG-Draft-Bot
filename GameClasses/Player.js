@@ -1,6 +1,6 @@
 class Player{
 
-  #user;
+  user;
   isActive;
 
   constructor(user){

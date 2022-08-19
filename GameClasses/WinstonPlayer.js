@@ -11,7 +11,12 @@ class WinstonPlayer extends Player{
 
   addPick(pick){
 
-    this.#picks.pus(pick);
+    if(Array.isArray(pick) ){
+      this.#picks= this.#picks.concat(pick);
+    }else{
+      this.#picks.push(pick);
+    }
+    
     
   }
   

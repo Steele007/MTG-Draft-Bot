@@ -20,6 +20,7 @@ client.on("ready", () => {
 
 client.on("messageCreate", async (message) => {
 
+  console.log(message.channel.type);
   //Print out a card.
   if (message.content.startsWith("Cardname: ")) { 
     
@@ -56,8 +57,6 @@ client.on("messageCreate", async (message) => {
       }else{
 
         let imgLink = card.image_uris.large;
-
-
       
         let cardImg = new EmbedBuilder().setTitle(card.name).setURL(card.scryfall_uri).setImage(imgLink);
         message.reply({embeds: [cardImg]});
@@ -72,6 +71,7 @@ client.on("messageCreate", async (message) => {
       
   }
 
+  //Start a Winston Draft/
   if (message.content.startsWith("WinstonDraft: ")){
 
     if(PlayerRoster.allPlayers.has(message.author)){
@@ -132,6 +132,7 @@ client.on("messageCreate", async (message) => {
     
   }
 
+  //Join whichever game is currently looking for players.
   if(message.content === "Joingame"){
     if(PlayerRoster.has(message.author)){
 
@@ -156,6 +157,15 @@ client.on("messageCreate", async (message) => {
       }
       
       
+    }
+  }
+
+  if(message.content === "Pick" && message.channel.type == 'DM'){
+    
+    if(PlayerRoster.allPlayers.has(message.author)){
+      
+      let player = PlayerRoster.allPlayers.get(message.author);
+        
     }
   }
 });

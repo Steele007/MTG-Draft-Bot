@@ -10,15 +10,20 @@ class WinstonDraft{
   #cardSlots;
   #cardsInPacks;
   #gameStart;
+  #activePlayer;
+  #postion; //The position of the card pile the active player is looking at.
+  #client;
+  
+  constructor(sets, client){
 
-  constructor(sets){
-
+    this.#client = client;
     this.#gameStart = false;
     this.#deck = [];
     this.#cardSlots = [[],[],[]];
     this.#setMap = new Set();
     this.#players = [];
     this.#packs = [];
+    this.#postion = 0;
     this.#cardsInPacks = 90; //Hardcode different number for sets like Double Masters? 
 
     //Generate the card pools for each set.
@@ -47,6 +52,7 @@ class WinstonDraft{
 
             while(setPool.has_more === true){
 
+              await new Promise(resolve => setTimeout(resolve, 100));
               j++;
               let innerReq = https.get(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`, response => {
 
@@ -110,34 +116,42 @@ class WinstonDraft{
     
   }
 
-  pass(position){
+  pass(){
 
-    if(position >= 2){
+    if(this.#position >= 2){
 
-      return this.#deck.pop();
+      this.#players[this.#activePlayer].addPick(this.#deck.pop()) ;
+      this.#postion = 0;
+      if(this.#activePlayer === 0){
+        this.#activePlayer = 1;
+      }else{
+        this.#activePlayer = 0;
+      }
       
     }else{
 
-      this.#cardSlots[position].push(this.#deck.pop());
-      return null;
+      this.#cardSlots[this.#position].push(this.#deck.pop());
+      this.#postion++;
       
     }
     
   }
 
-  pick(position){
+  pick(){
 
-    if(position < 3){
+    if(this.#position < 3){
 
-      let picks = Array.from(this.#cardSlots[position]) ;
-      this.#cardSlots[position] = [];
-      this.#cardSlots[position].push(this.#deck.pop());
-      return picks;
+      let picks = Array.from(this.#cardSlots[this.#position]) ;
+      this.#cardSlots[this.#position] = [];
+      this.#cardSlots[this.#position].push(this.#deck.pop());
+      this.#players[this.#activePlayer].addPick(picks);
+      this.#postion = 0;
       
-    }else{
-
-      return null;
-      
+      if(this.#activePlayer === 0){
+        this.#activePlayer = 1;
+      }else{
+        this.#activePlayer = 0;
+      }
     }
     
   }
@@ -153,6 +167,10 @@ class WinstonDraft{
       this.#startGame();
       return true; 
       
+    }else if(this.#players.length >= 1){
+
+      //Do nothing in case async shenanigans cause a player to join a full game.
+      
     }else{
 
       this.#players.push(player);
@@ -162,9 +180,43 @@ class WinstonDraft{
     
   }
 
+  endGame(){
+    
+    return this.#players;
+  }
+
+  presentCards(){
+    
+    for(card of this.#cardSlots[this.#postion]){
+
+      if(card.layout == 'transform' || card.layout == 'modal_dfc'){
+        let imgLink1 = card.card_faces[0].image_uris.large;
+        let imgLink2 = card.card_faces[1].image_uris.large;
+
+      
+        let cardFrontImg = new EmbedBuilder().setTitle(card.name).setURL(card.scryfall_uri).setImage(imgLink1);
+        let cardBackImg = new EmbedBuilder().setURL(card.scryfall_uri).setImage(imgLink2);
+        
+        this.#players[this.#activePlayer].user.send({embeds: [cardFrontImg, cardBackImg]});
+      }else{
+
+        let imgLink = card.image_uris.large;
+
+        let cardImg = new EmbedBuilder().setTitle(card.name).setURL(card.scryfall_uri).setImage(imgLink);
+        this.#players[this.#activePlayer].user.send({embeds: [cardImg]});
+        
+      }
+     
+    }
+
+    this.#players[this.#activePlayer].user.send("Pick or Pass?");
+    
+  }
+
   #startGame(){
 
-    
+    this.#activePlayer = Math.floor(Math.random*this.#players.length);
+    this.#players[this.#activePlayer].isActive = true;
     
   }
   
