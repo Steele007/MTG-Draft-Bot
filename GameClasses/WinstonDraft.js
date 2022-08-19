@@ -1,6 +1,6 @@
 const https = require('https');
-import {CardPool} from './CardPool.js';
-import {Pack} from './Pack.js';
+const {CardPool} = require('./CardPool.js');
+const {Pack} = require('./Pack.js');
 class WinstonDraft{
 
   #deck; //What else do I call it?
@@ -9,13 +9,15 @@ class WinstonDraft{
   #setMap;
   #cardSlots;
   #cardsInPacks;
+  #gameStart;
 
-  constructor(players, sets){
+  constructor(sets){
 
+    this.#gameStart = false;
     this.#deck = [];
     this.#cardSlots = [[],[],[]];
     this.#setMap = new Set();
-    this.#players = players;
+    this.#players = [];
     this.#packs = [];
     this.#cardsInPacks = 90; //Hardcode different number for sets like Double Masters? 
 
@@ -137,6 +139,32 @@ class WinstonDraft{
       return null;
       
     }
+    
+  }
+
+  addPlayer(player){
+
+    //Return values tell the bot when to stop letting people join the game.
+    //To do: link up PlayerRoster to prevent players from playing multiple games.
+    if(this.#players.length === 1){
+
+      this.#players.push(player);
+      this.#gameStart = true;
+      this.#startGame();
+      return true; 
+      
+    }else{
+
+      this.#players.push(player);
+      return false;
+      
+    }
+    
+  }
+
+  #startGame(){
+
+    
     
   }
   

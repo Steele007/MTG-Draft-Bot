@@ -8,5 +8,11 @@ class WinstonPlayer extends Player{
     this.#picks = [];
     
   }
+
+  addPick(pick){
+
+    this.#picks.pus(pick);
+    
+  }
   
 }

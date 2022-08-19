@@ -1,11 +1,16 @@
 //const Database = require("@replit/database");
 //const db = new Database();
-const mongoose = require('mongoose');
+//const mongoose = require('mongoose');
 const https = require('https');
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const {PlayerRoster} = require('./GameClasses/PlayerRoster.js');
+const {WinstonDraft} = require('./GameClasses/WinstonDraft.js');
 
 
 const client = new Client({ intents: [GatewayIntentBits.DirectMessages, GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent ] });
+
+let searchingForPlayers = false;
+let activeGame = null; //Just one? Expand later
     
 const mySecret = process.env['TOKEN'];
 
@@ -66,6 +71,95 @@ client.on("messageCreate", async (message) => {
     cardReq.end();
       
   }
+
+  if (message.content.startsWith("WinstonDraft: ")){
+
+    if(PlayerRoster.allPlayers.has(message.author)){
+      message.reply("You're already in a game.");
+      break;
+    }
+    
+    inputs = message.content.split(" ");
+    inputs.shift();
+    let isValid = true;
+
+    if(inputs.length !== 6){
+      message.reply("Must specify the set used by each booster.\n Format: WinstonDraft: setCode setCode setCode setCode setCode setCode");
+    }else{
+
+      for(set of inputs){
+
+        setGet = https.get(`https://api.scryfall.com/sets/${set}`, resp => {
+
+          let data = '';
+
+          resp.on('data', (chunk) => {
+            data += chunk;
+          });
+
+          resp.on('end', () => {
+
+            if(JSON.parse(data).object === "error"){
+              isValid = false;
+            }
+            //Wait 100 ms so Scryfall doesn't ban my IP address.
+            await new Promise(resolve => setTimeout(resolve, 100));
+          });
+          
+        });
+
+        setGet.end();
+        
+      }
+
+      if(isValid){
+
+        let winstonDraft = new WinstonDraft(inputs);
+        let newPlayer = new WinstonPlayer(message.author);
+        PlayerRoster.addPlayer(newPlayer, message.author);
+        winstonDraft.addPlayer(newPlayer)
+        searchingForPlayers = true;
+        activeGame = winstonDraft;
+        
+      }else{
+
+        message.reply("One or more set codes are invalid.");
+        
+      }
+      
+      
+    }
+    
+  }
+
+  if(message.content === "Joingame"){
+    if(PlayerRoster.has(message.author)){
+
+      message.reply("You're already in a game!");
+      
+    }else if(searchingForPlayers === false){
+
+      message.reply("No one is looking for players right now.");
+      
+    }else{
+
+      let newPlayer = new WinstonPlayer();
+      if(activeGame.addPlayer(newPlayer)){
+          
+        searchingForPlayers = false;
+        PlayerRoster.addPlayer(newPlayer, message.author);
+          
+      }else{
+
+        PlayerRoster.addPlayer(newPlayer, message.author);
+        
+      }
+      
+      
+    }
+  }
 });
 
+console.log("About to login.");
 client.login(mySecret);
+
