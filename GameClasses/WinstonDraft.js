@@ -12,11 +12,10 @@ class WinstonDraft{
   #gameStart;
   #activePlayer;
   #position; //The position of the card pile the active player is looking at.
-  #client;
   
-  constructor(sets, client){
+  
+  constructor(){
 
-    this.#client = client;
     this.#gameStart = false;
     this.#deck = [];
     this.#cardSlots = [[],[],[]];
@@ -25,7 +24,12 @@ class WinstonDraft{
     this.#packs = [];
     this.#position = 0;
     this.#cardsInPacks = 90; //Hardcode different number for sets like Double Masters? 
+   
+  }
 
+  //Constructor code seprated for async purposes.
+  async genCards(sets){
+    
     //Generate the card pools for each set.
     for(let set of sets){
 
@@ -52,8 +56,8 @@ class WinstonDraft{
 
             while(setPool.has_more === true){
 
-              (async () => {
-              await new Promise(resolve => setTimeout(resolve, 100));
+              await (async () => {
+                await new Promise(resolve => setTimeout(resolve, 100));
               })();
               j++;
               let innerReq = https.get(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`, response => {
@@ -92,15 +96,15 @@ class WinstonDraft{
       
     }
 
-    this.#shuffle();
+    await this.#shuffle();
 
     this.#cardSlots[0].push(this.#deck.pop());
     this.#cardSlots[1].push(this.#deck.pop());
     this.#cardSlots[2].push(this.#deck.pop());
     
   }
-
-  #shuffle(){
+  
+  async #shuffle(){
 
     while(this.#cardsInPacks > 0){
 

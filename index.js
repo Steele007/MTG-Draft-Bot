@@ -14,7 +14,7 @@ let activeGame = null; //Just one? Expand later
     
 const mySecret = process.env['TOKEN'];
 
-const sendCard = function(user, card){
+const sendCard = async function(user, card){
 
   if(card.layout == 'transform' || card.layout == 'modal_dfc'){
     let imgLink1 = card.card_faces[0].image_uris.large;
@@ -130,7 +130,7 @@ client.on("messageCreate", async (message) => {
               isValid = false;
             }
             //Wait 100 ms so Scryfall doesn't ban my IP address.
-            (async () => {
+            await (async () => {
               await new Promise(resolve => setTimeout(resolve, 100));
             })();
             
@@ -144,8 +144,9 @@ client.on("messageCreate", async (message) => {
 
       if(isValid){
 
-        let winstonDraft = new WinstonDraft(inputs);
+        let winstonDraft = new WinstonDraft();
         let newPlayer = new WinstonPlayer(message.author);
+        await winstonDraft.genCards(inputs)
         PlayerRoster.addPlayer(newPlayer, message.author);
         winstonDraft.addPlayer(newPlayer)
         searchingForPlayers = true;
@@ -203,7 +204,7 @@ client.on("messageCreate", async (message) => {
           for(player of players){
             for(card of player.getPicks()){
 
-              sendCard(player.user, card);
+              await sendCard(player.user, card);
               
             }
           }
@@ -226,7 +227,7 @@ client.on("messageCreate", async (message) => {
           for(player of players){
             for(card of player.getPicks()){
 
-              sendCard(player.user, card);
+              await sendCard(player.user, card);
               
             }
           }
