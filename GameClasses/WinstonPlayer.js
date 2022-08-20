@@ -19,5 +19,11 @@ class WinstonPlayer extends Player{
     
     
   }
+
+  getPicks(){
+
+    return this.#picks;
+    
+  }
   
 }

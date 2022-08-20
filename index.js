@@ -14,6 +14,28 @@ let activeGame = null; //Just one? Expand later
     
 const mySecret = process.env['TOKEN'];
 
+const sendCard = function(user, card){
+
+  if(card.layout == 'transform' || card.layout == 'modal_dfc'){
+    let imgLink1 = card.card_faces[0].image_uris.large;
+    let imgLink2 = card.card_faces[1].image_uris.large;
+
+      
+    let cardFrontImg = new       EmbedBuilder().setTitle(card.name).setURL(card.scryfall_uri).setImage(imgLink1);
+    let cardBackImg = new EmbedBuilder().setURL(card.scryfall_uri).setImage(imgLink2);
+        
+    user.send({embeds: [cardFrontImg, cardBackImg]});
+  }else{
+
+    imgLink = card.image_uris.large;
+
+    let cardImg = new EmbedBuilder().setTitle(card.name).setURL(card.scryfall_uri).setImage(imgLink);
+    user.send({embeds: [cardImg]});
+        
+  }
+  
+}
+
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
@@ -76,6 +98,11 @@ client.on("messageCreate", async (message) => {
 
     if(PlayerRoster.allPlayers.has(message.author)){
       message.reply("You're already in a game.");
+      break;
+    }
+
+    if(activeGame !== null){
+      message.author.reply("Game already in progress.");
       break;
     }
     
@@ -165,7 +192,44 @@ client.on("messageCreate", async (message) => {
     if(PlayerRoster.allPlayers.has(message.author)){
       
       let player = PlayerRoster.allPlayers.get(message.author);
+      if(player.isActive){
         
+        if(activeGame.pick()){
+          let players = activeGame.endGame();
+          PlayerRoster.clearPlayers(players);
+          for(player of players){
+            for(card of player.getPicks()){
+
+              sendCard(player.user, card);
+              
+            }
+          }
+          activeGame = null;
+        } 
+      }  
+    }
+  }
+
+  if(message.content === "Pass" && message.channel.type == 'DM'){
+    
+    if(PlayerRoster.allPlayers.has(message.author)){
+      
+      let player = PlayerRoster.allPlayers.get(message.author);
+      if(player.isActive){
+        
+        if(activeGame.pass()){
+          let players = activeGame.endGame();
+          PlayerRoster.clearPlayers(players);
+          for(player of players){
+            for(card of player.getPicks()){
+
+              sendCard(player.user, card);
+              
+            }
+          }
+          activeGame = null;
+        } 
+      }  
     }
   }
 });

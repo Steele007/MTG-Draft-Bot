@@ -122,10 +122,17 @@ class WinstonDraft{
 
       this.#players[this.#activePlayer].addPick(this.#deck.pop()) ;
       this.#postion = 0;
+      if(this.#cardSlots[0].length === 0 && this.#cardSlots[1].length === 0 && this.#cardSlots[2].length === 0 && this.#deck.length == 0){
+          return true; //Game is over.
+        }
       if(this.#activePlayer === 0){
+        this.#players[this.#activePlayer].isActive = false;
         this.#activePlayer = 1;
+        this.#players[this.#activePlayer].isActive = true;
       }else{
+        this.#players[this.#activePlayer].isActive = false;
         this.#activePlayer = 0;
+        this.#players[this.#activePlayer].isActive = true;
       }
       
     }else{
@@ -134,6 +141,8 @@ class WinstonDraft{
       this.#postion++;
       
     }
+
+    return false; //Game will continue
     
   }
 
@@ -146,13 +155,24 @@ class WinstonDraft{
       this.#cardSlots[this.#position].push(this.#deck.pop());
       this.#players[this.#activePlayer].addPick(picks);
       this.#postion = 0;
+
+      if(this.#cardSlots[0].length === 0 && this.#cardSlots[1].length === 0 && this.#cardSlots[2].length === 0 && this.#deck.length == 0){
+          return true; //Game is over.
+        }
       
       if(this.#activePlayer === 0){
+        this.#players[this.#activePlayer].isActive = false;
         this.#activePlayer = 1;
+        this.#players[this.#activePlayer].isActive = true;
       }else{
+        this.#players[this.#activePlayer].isActive = false;
         this.#activePlayer = 0;
+        this.#players[this.#activePlayer].isActive = true;
       }
+      
     }
+
+    return false; //Game will continue.
     
   }
 
@@ -182,10 +202,13 @@ class WinstonDraft{
 
   endGame(){
     
+    this.#activePlayer = null
     return this.#players;
   }
 
   presentCards(){
+
+    this.#players[this.#activePlayer].user.send(`Cards in position ${this.#postion}`);
     
     for(card of this.#cardSlots[this.#postion]){
 
@@ -217,7 +240,7 @@ class WinstonDraft{
 
     this.#activePlayer = Math.floor(Math.random*this.#players.length);
     this.#players[this.#activePlayer].isActive = true;
-    
+    this.presentCards();
   }
   
 }

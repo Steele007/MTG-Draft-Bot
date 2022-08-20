@@ -23,9 +23,7 @@ class PlayerRoster {
     for(let player of players){
 
       this.allPlayers.delete(player);
-      
-    
-    
+         
   }
 
   
