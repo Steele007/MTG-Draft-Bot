@@ -98,12 +98,12 @@ client.on("messageCreate", async (message) => {
 
     if(PlayerRoster.allPlayers.has(message.author)){
       message.reply("You're already in a game.");
-      break;
+      return;
     }
 
     if(activeGame !== null){
       message.author.reply("Game already in progress.");
-      break;
+      return;
     }
     
     inputs = message.content.split(" ");
@@ -130,7 +130,10 @@ client.on("messageCreate", async (message) => {
               isValid = false;
             }
             //Wait 100 ms so Scryfall doesn't ban my IP address.
-            await new Promise(resolve => setTimeout(resolve, 100));
+            (async () => {
+              await new Promise(resolve => setTimeout(resolve, 100));
+            })();
+            
           });
           
         });

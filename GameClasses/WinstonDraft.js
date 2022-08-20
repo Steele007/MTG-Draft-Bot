@@ -11,7 +11,7 @@ class WinstonDraft{
   #cardsInPacks;
   #gameStart;
   #activePlayer;
-  #postion; //The position of the card pile the active player is looking at.
+  #position; //The position of the card pile the active player is looking at.
   #client;
   
   constructor(sets, client){
@@ -23,7 +23,7 @@ class WinstonDraft{
     this.#setMap = new Set();
     this.#players = [];
     this.#packs = [];
-    this.#postion = 0;
+    this.#position = 0;
     this.#cardsInPacks = 90; //Hardcode different number for sets like Double Masters? 
 
     //Generate the card pools for each set.
@@ -52,7 +52,9 @@ class WinstonDraft{
 
             while(setPool.has_more === true){
 
+              (async () => {
               await new Promise(resolve => setTimeout(resolve, 100));
+              })();
               j++;
               let innerReq = https.get(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`, response => {
 
@@ -121,7 +123,7 @@ class WinstonDraft{
     if(this.#position >= 2){
 
       this.#players[this.#activePlayer].addPick(this.#deck.pop()) ;
-      this.#postion = 0;
+      this.#position = 0;
       if(this.#cardSlots[0].length === 0 && this.#cardSlots[1].length === 0 && this.#cardSlots[2].length === 0 && this.#deck.length == 0){
           return true; //Game is over.
         }
@@ -138,7 +140,7 @@ class WinstonDraft{
     }else{
 
       this.#cardSlots[this.#position].push(this.#deck.pop());
-      this.#postion++;
+      this.#position++;
       
     }
 
@@ -154,7 +156,7 @@ class WinstonDraft{
       this.#cardSlots[this.#position] = [];
       this.#cardSlots[this.#position].push(this.#deck.pop());
       this.#players[this.#activePlayer].addPick(picks);
-      this.#postion = 0;
+      this.#position = 0;
 
       if(this.#cardSlots[0].length === 0 && this.#cardSlots[1].length === 0 && this.#cardSlots[2].length === 0 && this.#deck.length == 0){
           return true; //Game is over.
@@ -208,9 +210,9 @@ class WinstonDraft{
 
   presentCards(){
 
-    this.#players[this.#activePlayer].user.send(`Cards in position ${this.#postion}`);
+    this.#players[this.#activePlayer].user.send(`Cards in position ${this.#position}`);
     
-    for(card of this.#cardSlots[this.#postion]){
+    for(card of this.#cardSlots[this.#position]){
 
       if(card.layout == 'transform' || card.layout == 'modal_dfc'){
         let imgLink1 = card.card_faces[0].image_uris.large;
