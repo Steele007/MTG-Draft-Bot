@@ -1,6 +1,7 @@
 const https = require('https');
-const {CardPool} = require('./CardPool.js');
-const {Pack} = require('./Pack.js');
+const CardPool = require('./CardPool.js');
+const Pack = require('./Pack.js');
+const fetch = require('node-fetch');
 class WinstonDraft{
 
   #deck; //What else do I call it?
@@ -19,7 +20,7 @@ class WinstonDraft{
     this.#gameStart = false;
     this.#deck = [];
     this.#cardSlots = [[],[],[]];
-    this.#setMap = new Set();
+    this.#setMap = new Map();
     this.#players = [];
     this.#packs = [];
     this.#position = 0;
@@ -41,7 +42,27 @@ class WinstonDraft{
 
         let j = 1;
         let cardPool;
-        let setReq = https.get(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`, resp => {
+        let setReq = await fetch(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`);
+        let setPool = await setReq.json();
+        cardPool = setPool.data;
+
+        while(setPool.has_more === true){
+
+              await (async () => {
+                await new Promise(resolve => setTimeout(resolve, 150));
+              })();
+              j++;
+              let innerReq = await fetch(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`);
+
+                setPool = await innerReq.json();
+               
+                cardPool = cardPool.concat(setPool.data);
+                     
+        }
+
+            this.#setMap.add(set,new CardPool(cardPool))//
+        
+       /* let setReq = https.get(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`, resp => {
 
           let data = '';
           
@@ -57,7 +78,7 @@ class WinstonDraft{
             while(setPool.has_more === true){
 
               await (async () => {
-                await new Promise(resolve => setTimeout(resolve, 100));
+                await new Promise(resolve => setTimeout(resolve, 150));
               })();
               j++;
               let innerReq = https.get(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`, response => {
@@ -84,7 +105,7 @@ class WinstonDraft{
           });
           
         });
-        setReq.end();
+        setReq.end();*/
       }
       
     }
@@ -119,6 +140,8 @@ class WinstonDraft{
       }
           
     }
+
+    console.log(this.#deck);
     
   }
 
@@ -250,3 +273,4 @@ class WinstonDraft{
   }
   
 }
+module.exports = WinstonDraft;

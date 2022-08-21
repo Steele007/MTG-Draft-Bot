@@ -30,3 +30,4 @@ class PlayerRoster {
   
 }
 }
+module.exports = PlayerRoster;

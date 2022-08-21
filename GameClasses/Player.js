@@ -5,9 +5,11 @@ class Player{
 
   constructor(user){
 
-    this.#user = user;
+    this.user = user;
     this.isActive = false;
     
   }
   
 }
+
+module.exports = Player;

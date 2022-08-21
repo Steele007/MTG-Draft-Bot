@@ -13,6 +13,7 @@ class CardPool {
 
     for(let card of cardPool){
 
+      console.log(card);
       if(card.booster === false){
 
         
@@ -82,3 +83,4 @@ class CardPool {
     
   }
 }
+module.exports = CardPool;

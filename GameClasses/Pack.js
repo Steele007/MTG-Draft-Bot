@@ -1,3 +1,4 @@
+const CardPool = require('./CardPool.js');
 class Pack{
 
   #isMythic;
@@ -86,3 +87,4 @@ class Pack{
   }
   
 }
+module.exports = Pack;

@@ -2,10 +2,11 @@
 //const db = new Database();
 //const mongoose = require('mongoose');
 const https = require('https');
+const fetch = require('node-fetch');
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
-const {PlayerRoster} = require('./GameClasses/PlayerRoster.js');
-const {WinstonDraft} = require('./GameClasses/WinstonDraft.js');
-
+const PlayerRoster = require('./GameClasses/PlayerRoster.js');
+const WinstonDraft = require('./GameClasses/WinstonDraft.js');
+const WinstonPlayer = require('./GameClasses/WinstonPlayer.js');
 
 const client = new Client({ intents: [GatewayIntentBits.DirectMessages, GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent ] });
 
@@ -42,8 +43,12 @@ client.on("ready", () => {
 
 client.on("messageCreate", async (message) => {
 
-  console.log(message.channel.type);
   //Print out a card.
+  if(message.content === "hey"){
+    let response = await fetch(`https://api.scryfall.com/cards/named?fuzzy=aust+com`);
+    let str = await response.json();
+    console.log(str.name);
+  }
   if (message.content.startsWith("Cardname: ")) { 
     
     let cardReq =   https.get(`https://api.scryfall.com/cards/named?fuzzy=${message.content.slice(10)}`, resp => {
@@ -113,10 +118,21 @@ client.on("messageCreate", async (message) => {
     if(inputs.length !== 6){
       message.reply("Must specify the set used by each booster.\n Format: WinstonDraft: setCode setCode setCode setCode setCode setCode");
     }else{
-
+      
       for(set of inputs){
+        let setGet = await fetch(`https://api.scryfall.com/sets/${set}`);
+        let data = await setGet.json();
 
-        setGet = https.get(`https://api.scryfall.com/sets/${set}`, resp => {
+        if(data.object === "error"){
+              isValid = false;
+            }
+            console.log(data);
+            //Wait 100 ms so Scryfall doesn't ban my IP address.
+            await (async () => {
+              await new Promise(resolve => setTimeout(resolve, 150));
+            })();
+        
+        /*let setGet = https.get(`https://api.scryfall.com/sets/${set}`, resp => {
 
           let data = '';
 
@@ -129,19 +145,20 @@ client.on("messageCreate", async (message) => {
             if(JSON.parse(data).object === "error"){
               isValid = false;
             }
+            console.log(`In Index: set=${data}`);
             //Wait 100 ms so Scryfall doesn't ban my IP address.
             await (async () => {
-              await new Promise(resolve => setTimeout(resolve, 100));
+              await new Promise(resolve => setTimeout(resolve, 150));
             })();
             
           });
           
         });
 
-        setGet.end();
+        setGet.end();*/
         
       }
-
+      
       if(isValid){
 
         let winstonDraft = new WinstonDraft();
@@ -239,5 +256,6 @@ client.on("messageCreate", async (message) => {
 });
 
 console.log("About to login.");
+//console.log(PlayerRoster);         
 client.login(mySecret);
 

@@ -12,7 +12,9 @@
   "dependencies": {
     "@replit/database": "^2.0.2",
     "@types/node": "^18.0.6",
+    "@types/node-fetch": "^2.6.2",
     "discord.js": "^14.2.0",
-    "mongoose": "^6.5.2"
+    "mongoose": "^6.5.2",
+    "node-fetch": "^2.6.6"
   }
 }

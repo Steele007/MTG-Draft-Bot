@@ -1,3 +1,4 @@
+const Player = require('./Player.js');
 class WinstonPlayer extends Player{
 
   #picks;
@@ -27,3 +28,4 @@ class WinstonPlayer extends Player{
   }
   
 }
+module.exports = WinstonPlayer;
