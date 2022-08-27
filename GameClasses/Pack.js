@@ -5,7 +5,10 @@ class Pack{
   #cards;
   
   constructor(cardPool){
-
+    
+    this.#cards = new Set();
+    console.log("In pack constructor.");
+    
     if((Math.floor(Math.random() * 8))+ 1 === 1){
 
       this.#isMythic = true;
@@ -15,8 +18,8 @@ class Pack{
       this.#isMythic = false;
       
     }
-
-    this.#cards = new Set();
+    console.log(this.#isMythic);
+    
 
     if(this.#isMythic){
 
@@ -30,6 +33,7 @@ class Pack{
 
     for(let i = 0; i < 3; i++){
 
+      console.log("Uncommon");
       let cardToAdd = cardPool.getUncommon();
 
       while(this.#cards.has(cardToAdd)){
@@ -57,12 +61,12 @@ class Pack{
     }
 
     this.#cards.add(cardPool.getLand());
-    
+    console.log(this.#cards);
   }
 
   removePick(card){
 
-    //Fill later.
+    //Fill later (probably for the full draft).
     
   }
 

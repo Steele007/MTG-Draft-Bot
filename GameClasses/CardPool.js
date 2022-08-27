@@ -4,7 +4,8 @@ class CardPool {
 
   constructor(cardPool){
 
-    this.#sortedPool = new Map;
+    console.log(cardPool);    
+    this.#sortedPool = new Map();
     this.#sortedPool.set("land", []);
     this.#sortedPool.set("common", []);
     this.#sortedPool.set("uncommon", []);
@@ -13,7 +14,7 @@ class CardPool {
 
     for(let card of cardPool){
 
-      console.log(card);
+      //console.log(card);
       if(card.booster === false){
 
         

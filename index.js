@@ -1,7 +1,6 @@
 //const Database = require("@replit/database");
 //const db = new Database();
 //const mongoose = require('mongoose');
-const https = require('https');
 const fetch = require('node-fetch');
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const PlayerRoster = require('./GameClasses/PlayerRoster.js');
@@ -15,6 +14,7 @@ let activeGame = null; //Just one? Expand later
     
 const mySecret = process.env['TOKEN'];
 
+//Helper func for displaying a card to a specific user.
 const sendCard = async function(user, card){
 
   if(card.layout == 'transform' || card.layout == 'modal_dfc'){
@@ -44,11 +44,6 @@ client.on("ready", () => {
 client.on("messageCreate", async (message) => {
 
   //Print out a card.
-  if(message.content === "hey"){
-    let response = await fetch(`https://api.scryfall.com/cards/named?fuzzy=aust+com`);
-    let str = await response.json();
-    console.log(str.name);
-  }
   if (message.content.startsWith("Cardname: ")) { 
     
     let cardReq =   https.get(`https://api.scryfall.com/cards/named?fuzzy=${message.content.slice(10)}`, resp => {
@@ -114,48 +109,26 @@ client.on("messageCreate", async (message) => {
     inputs = message.content.split(" ");
     inputs.shift();
     let isValid = true;
-
+    
     if(inputs.length !== 6){
       message.reply("Must specify the set used by each booster.\n Format: WinstonDraft: setCode setCode setCode setCode setCode setCode");
     }else{
       
-      for(set of inputs){
+      for(let set of inputs){
         let setGet = await fetch(`https://api.scryfall.com/sets/${set}`);
         let data = await setGet.json();
 
         if(data.object === "error"){
               isValid = false;
-            }
-            console.log(data);
-            //Wait 100 ms so Scryfall doesn't ban my IP address.
-            await (async () => {
-              await new Promise(resolve => setTimeout(resolve, 150));
-            })();
+        }
         
-        /*let setGet = https.get(`https://api.scryfall.com/sets/${set}`, resp => {
-
-          let data = '';
-
-          resp.on('data', (chunk) => {
-            data += chunk;
-          });
-
-          resp.on('end', () => {
-
-            if(JSON.parse(data).object === "error"){
-              isValid = false;
-            }
-            console.log(`In Index: set=${data}`);
-            //Wait 100 ms so Scryfall doesn't ban my IP address.
-            await (async () => {
-              await new Promise(resolve => setTimeout(resolve, 150));
-            })();
-            
-          });
-          
-        });
-
-        setGet.end();*/
+        console.log("begin wait.");
+        
+        //Wait 100 ms so Scryfall doesn't ban my IP address.
+        await (async () => {
+          await new Promise(resolve => setTimeout(resolve, 150));
+        })();
+        
         
       }
       
@@ -163,11 +136,15 @@ client.on("messageCreate", async (message) => {
 
         let winstonDraft = new WinstonDraft();
         let newPlayer = new WinstonPlayer(message.author);
-        await winstonDraft.genCards(inputs)
+        console.log("here");
+        await winstonDraft.genCards(inputs);
+        console.log("here again");
         PlayerRoster.addPlayer(newPlayer, message.author);
         winstonDraft.addPlayer(newPlayer)
         searchingForPlayers = true;
         activeGame = winstonDraft;
+        
+        message.channel.send("Game open for joining.");
         
       }else{
 
@@ -208,6 +185,7 @@ client.on("messageCreate", async (message) => {
     }
   }
 
+  //Active player picks current card selection.
   if(message.content === "Pick" && message.channel.type == 'DM'){
     
     if(PlayerRoster.allPlayers.has(message.author)){
@@ -231,6 +209,7 @@ client.on("messageCreate", async (message) => {
     }
   }
 
+  //Active player passes current card selection.
   if(message.content === "Pass" && message.channel.type == 'DM'){
     
     if(PlayerRoster.allPlayers.has(message.author)){

@@ -33,10 +33,10 @@ class WinstonDraft{
     
     //Generate the card pools for each set.
     for(let set of sets){
-
+      
       if(this.#setMap.has(set)){
 
-
+        //If the cardpool for the set has already been generated, just skip this iteration.
         
       }else{
 
@@ -44,68 +44,29 @@ class WinstonDraft{
         let cardPool;
         let setReq = await fetch(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`);
         let setPool = await setReq.json();
+        //console.log(setPool);
         cardPool = setPool.data;
+        
+        //While the set still has more JSON files left.
+        while(setPool.has_more == true){
 
-        while(setPool.has_more === true){
+          await (async () => {
+            await new Promise(resolve => setTimeout(resolve, 150));
+          })();
+          j++;
+          let innerReq = await fetch(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`);
 
-              await (async () => {
-                await new Promise(resolve => setTimeout(resolve, 150));
-              })();
-              j++;
-              let innerReq = await fetch(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`);
+          setPool = await innerReq.json();
+          //console.log(setPool);
+          cardPool = cardPool.concat(setPool.data);
 
-                setPool = await innerReq.json();
-               
-                cardPool = cardPool.concat(setPool.data);
+          
                      
         }
 
-            this.#setMap.add(set,new CardPool(cardPool))//
+        //Add the cardpool to the map.    
+        this.#setMap.set(set,new CardPool(cardPool))
         
-       /* let setReq = https.get(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`, resp => {
-
-          let data = '';
-          
-          resp.on("data", (chunk) => {
-            data += chunk;
-          });
-
-          resp.on("end", () => {
-
-            let setPool = JSON.parse(data);
-            cardPool = setPool.data;
-
-            while(setPool.has_more === true){
-
-              await (async () => {
-                await new Promise(resolve => setTimeout(resolve, 150));
-              })();
-              j++;
-              let innerReq = https.get(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`, response => {
-
-                data = '';
-
-                response.on("data", (chunk) => {
-                  data += chunk;                  
-                });
-
-                response.on("end",() => {
-
-                  setPool = JSON.parse(data);
-                  cardPool = cardPool.concat(setPool.data);
-                  
-                });
-                
-              });
-              innerReq.end();
-            }
-
-            this.#setMap.add(new CardPool(cardPool))
-            
-          });
-          
-        });
-        setReq.end();*/
       }
       
     }
@@ -113,16 +74,19 @@ class WinstonDraft{
     //Generate a pack for each of the specified sets.
     for(let set of sets){
 
+      console.log(set);
       this.#packs.push(new Pack(this.#setMap.get(set)));
       
     }
 
     await this.#shuffle();
+    console.log("Shuffle done.");
 
+    //Set up the initial card slots.
     this.#cardSlots[0].push(this.#deck.pop());
     this.#cardSlots[1].push(this.#deck.pop());
     this.#cardSlots[2].push(this.#deck.pop());
-    
+    console.log("Gen done.")
   }
   
   async #shuffle(){
@@ -216,7 +180,7 @@ class WinstonDraft{
       this.#startGame();
       return true; 
       
-    }else if(this.#players.length >= 1){
+    }else if(this.#players.length > 1){
 
       //Do nothing in case async shenanigans cause a player to join a full game.
       
