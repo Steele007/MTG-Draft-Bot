@@ -123,17 +123,19 @@ class WinstonDraft{
   }
 
   //When a player passes, put the top card of the deck onto the card slot they just left.
-  pass(){
+  async pass(){
 
     if(this.#position >= 2){
 
       let newCard = this.#deck.pop();
+      console.log(`Card: ${newCard.name}`);
       if(newCard != null){
         this.#cardSlots[this.#position].push(newCard);
         console.log(`Pushed: ${newCard.name}`);
       }
       //Player takes top card off as a default
       let pick = this.#deck.pop();
+      console.log(`Card: ${pick.name}`);
       if(pick != null){
         this.#players[this.#activePlayer].addPick(pick);
         console.log(`Picked: ${pick.name}`);
@@ -157,6 +159,7 @@ class WinstonDraft{
     }else{
 
       let newCard = this.#deck.pop();
+      console.log(`Card: ${newCard.name}`);
       if(newCard != null){
         this.#cardSlots[this.#position].push(newCard);
         console.log(`Pushed: ${newCard.name}`);
@@ -165,19 +168,20 @@ class WinstonDraft{
       
     }
 
-    this.presentCards();
+    await this.presentCards();
     return false; //Game will continue
     
   }
 
   //When a player picks, add everything in the card slot to the players picks and then add the top card of the deck to the card slot.
-  pick(){
+  async pick(){
 
     if(this.#position < 3){
 
       let picks = Array.from(this.#cardSlots[this.#position]);
       this.#cardSlots[this.#position] = [];
       let newCard = this.#deck.pop();
+      console.log(`Card: ${newCard.name}`);
       if(newCard != null){
         this.#cardSlots[this.#position].push(newCard);
         console.log(`Pushed: ${newCard.name}`);
@@ -203,7 +207,7 @@ class WinstonDraft{
       
     }
 
-    this.presentCards();
+    await this.presentCards();
     return false; //Game will continue.
     
   }
@@ -239,7 +243,7 @@ class WinstonDraft{
     return this.#players;
   }
 
-  presentCards(){
+  async presentCards(){
 
     
     this.#players[this.#activePlayer].user.send(`Cards in position ${this.#position + 1}`);
@@ -275,7 +279,7 @@ class WinstonDraft{
     this.#activePlayer = Math.floor(Math.random()*this.#players.length);
 
     this.#players[this.#activePlayer].isActive = true;
-    this.presentCards();
+    
   }
   
 }

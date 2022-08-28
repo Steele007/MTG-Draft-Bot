@@ -21,7 +21,9 @@ class CardPool {
       
       }else if(card.type_line.startsWith("Basic ") || card.name === "Tranquil Cove" || card.name === "Blossoming Sands" || card.name === "Dismal Backwater" || card.name === "Bloodfell Caves" || card.name === "Rugged Highlands" || card.name === "Scoured Barrens" || card.name === "Wind-Scarred Crag" || card.name === "Swiftwater Cliffs" || card.name === "Thornwood Falls" || card.name === "Jungle Hollow"){
 
-        this.#sortedPool.set("land", Array.from(this.#sortedPool.get("land").push(card)));
+        let arrayToUpdate = Array.from(this.#sortedPool.get("land"));
+        arrayToUpdate.push(card);
+        this.#sortedPool.set("land", arrayToUpdate);
         
       }else if(card.rarity === "common"){
 

@@ -65,8 +65,9 @@ class Pack{
       
     }
 
-    this.#cards.add(cardPool.getLand());
-      console.log("land");
+    let cardToAdd = cardPool.getLand();
+    this.#cards.add(cardToAdd);
+      console.log(cardToAdd.name);
     
     console.log(this.#cards.size);
   }

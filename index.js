@@ -38,6 +38,9 @@ const sendCard = async function(user, card){
   
 }
 
+client.on("debug", console.log);
+client.on("warn", console.log);
+
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
@@ -171,6 +174,7 @@ client.on("messageCreate", async (message) => {
           
         searchingForPlayers = false;
         PlayerRoster.addPlayer(newPlayer, message.author);
+        await activeGame.presentCards();
           
       }else{
 
@@ -191,7 +195,7 @@ client.on("messageCreate", async (message) => {
       let curPlayer = PlayerRoster.allPlayers.get(message.author);
       if(curPlayer.isActive){
         
-        if(activeGame.pick()){
+        if(await activeGame.pick()){
           let players = activeGame.endGame();
           PlayerRoster.clearPlayers(players);
           for(let player of players){
@@ -216,7 +220,7 @@ client.on("messageCreate", async (message) => {
       let curPlayer = PlayerRoster.allPlayers.get(message.author);
       if(curPlayer.isActive){
         
-        if(activeGame.pass()){
+        if(await activeGame.pass()){
           let players = activeGame.endGame();
           PlayerRoster.clearPlayers(players);
           for(let player of players){
@@ -249,4 +253,5 @@ client.on("messageCreate", async (message) => {
 console.log("About to login.");
 //console.log(PlayerRoster);         
 client.login(mySecret);
+
 
