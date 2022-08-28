@@ -18,7 +18,6 @@ class Pack{
       this.#isMythic = false;
       
     }
-    console.log(this.#isMythic);
     
 
     if(this.#isMythic){
@@ -31,9 +30,10 @@ class Pack{
       
     }
 
+    //console.log(this.#cards);
     for(let i = 0; i < 3; i++){
 
-      console.log("Uncommon");
+      //console.log("Uncommon");
       let cardToAdd = cardPool.getUncommon();
 
       while(this.#cards.has(cardToAdd)){
@@ -52,7 +52,7 @@ class Pack{
 
       while(this.#cards.has(cardToAdd)){
 
-        cardToAdd = cardPool.getCcommon();
+        cardToAdd = cardPool.getCommon();
         
       }
 
@@ -61,7 +61,7 @@ class Pack{
     }
 
     this.#cards.add(cardPool.getLand());
-    console.log(this.#cards);
+    //console.log(this.#cards);
   }
 
   removePick(card){

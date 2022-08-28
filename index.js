@@ -144,7 +144,7 @@ client.on("messageCreate", async (message) => {
         searchingForPlayers = true;
         activeGame = winstonDraft;
         
-        message.channel.send("Game open for joining.");
+        message.channel.send("Game open for joining. Type 'Joingame' to join.");
         
       }else{
 
@@ -159,7 +159,7 @@ client.on("messageCreate", async (message) => {
 
   //Join whichever game is currently looking for players.
   if(message.content === "Joingame"){
-    if(PlayerRoster.has(message.author)){
+    if(PlayerRoster.allPlayers.has(message.author)){
 
       message.reply("You're already in a game!");
       

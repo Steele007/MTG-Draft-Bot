@@ -74,7 +74,7 @@ class WinstonDraft{
     //Generate a pack for each of the specified sets.
     for(let set of sets){
 
-      console.log(set);
+      //console.log(set);
       this.#packs.push(new Pack(this.#setMap.get(set)));
       
     }
@@ -105,7 +105,7 @@ class WinstonDraft{
           
     }
 
-    console.log(this.#deck);
+    //console.log(this.#deck);
     
   }
 

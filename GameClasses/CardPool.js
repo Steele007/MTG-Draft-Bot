@@ -4,7 +4,7 @@ class CardPool {
 
   constructor(cardPool){
 
-    console.log(cardPool);    
+    
     this.#sortedPool = new Map();
     this.#sortedPool.set("land", []);
     this.#sortedPool.set("common", []);
@@ -25,27 +25,40 @@ class CardPool {
         
       }else if(card.rarity === "common"){
 
-        this.#sortedPool.set("common", Array.from(this.#sortedPool.get("common").push(card)));
+        let arrayToUpdate = Array.from(this.#sortedPool.get("common"));
+        arrayToUpdate.push(card);
+        this.#sortedPool.set("common", arrayToUpdate);
         
         
       }else if(card.rarity === "uncommon"){
 
-        this.#sortedPool.set("uncommon", Array.from(this.#sortedPool.get("uncommon").push(card)));
+        let arrayToUpdate = Array.from(this.#sortedPool.get("uncommon"));
+        arrayToUpdate.push(card);
+        this.#sortedPool.set("uncommon", arrayToUpdate);
         
         
       }else if(card.rarity === "rarity"){
 
-        this.#sortedPool.set("rarity", Array.from(this.#sortedPool.get("rarity").push(card)));
+        let arrayToUpdate = Array.from(this.#sortedPool.get("rare"));
+        arrayToUpdate.push(card);
+        this.#sortedPool.set("rarity", arrayToUpdate);
         
         
       }else if(card.rarity === "mythic"){
 
-        this.#sortedPool.set("mythic", Array.from(this.#sortedPool.get("mythic").push(card)));
+        let arrayToUpdate = Array.from(this.#sortedPool.get("mythic"));
+        arrayToUpdate.push(card);
+        this.#sortedPool.set("mythic", arrayToUpdate);
         
         
       }
       
     }
+
+    for(let card of this.#sortedPool.get("mythic")){
+      console.log(card.name);
+    }
+    
     
   }
 
