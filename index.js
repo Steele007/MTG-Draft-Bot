@@ -185,9 +185,9 @@ client.on("messageCreate", async (message) => {
   //Active player picks current card selection.
   if(message.content === "Pick" && message.channel.type === 1){
 
-    console.log("here");
+    
     if(PlayerRoster.allPlayers.has(message.author)){
-      console.log("here again");
+      
       let curPlayer = PlayerRoster.allPlayers.get(message.author);
       if(curPlayer.isActive){
         
@@ -210,9 +210,9 @@ client.on("messageCreate", async (message) => {
   //Active player passes current card selection.
   if(message.content === "Pass" && message.channel.type === 1){
 
-    console.log("here");
+    
     if(PlayerRoster.allPlayers.has(message.author)){
-      console.log("here again");
+      
       let curPlayer = PlayerRoster.allPlayers.get(message.author);
       if(curPlayer.isActive){
         
@@ -230,6 +230,19 @@ client.on("messageCreate", async (message) => {
         } 
       }  
     }
+  }
+
+  if(message.content === "Show Cards" && message.channel.type === 1){
+
+    let player = PlayerRoster.allPlayers.get(message.author);
+    let picks = player.getPicks();
+    
+    for(let card of picks){
+      
+      await sendCard(message.author, card);
+      
+    }
+    
   }
 });
 

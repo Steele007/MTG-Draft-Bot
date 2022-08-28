@@ -122,6 +122,7 @@ class WinstonDraft{
     
   }
 
+  //When a player passes, put the top card of the deck onto the card slot they just left.
   pass(){
 
     if(this.#position >= 2){
@@ -129,16 +130,20 @@ class WinstonDraft{
       let newCard = this.#deck.pop();
       if(newCard != null){
         this.#cardSlots[this.#position].push(newCard);
+        console.log(`Pushed: ${newCard.name}`);
       }
+      //Player takes top card off as a default
       let pick = this.#deck.pop();
       if(pick != null){
         this.#players[this.#activePlayer].addPick(pick);
+        console.log(`Picked: ${pick.name}`);
       }
-      console.log(this.#players[this.#activePlayer].getPicks());
+      
       this.#position = 0;
       if(this.#cardSlots[0].length === 0 && this.#cardSlots[1].length === 0 && this.#cardSlots[2].length === 0 && this.#deck.length == 0){
           return true; //Game is over.
         }
+      this.#players[this.#activePlayer].user.send("Waiting for opponent...");
       if(this.#activePlayer === 0){
         this.#players[this.#activePlayer].isActive = false;
         this.#activePlayer = 1;
@@ -154,6 +159,7 @@ class WinstonDraft{
       let newCard = this.#deck.pop();
       if(newCard != null){
         this.#cardSlots[this.#position].push(newCard);
+        console.log(`Pushed: ${newCard.name}`);
       }
       this.#position++;
       
@@ -164,6 +170,7 @@ class WinstonDraft{
     
   }
 
+  //When a player picks, add everything in the card slot to the players picks and then add the top card of the deck to the card slot.
   pick(){
 
     if(this.#position < 3){
@@ -172,16 +179,18 @@ class WinstonDraft{
       this.#cardSlots[this.#position] = [];
       let newCard = this.#deck.pop();
       if(newCard != null){
-        this.#cardSlots[this.#position].push(newCard);     
+        this.#cardSlots[this.#position].push(newCard);
+        console.log(`Pushed: ${newCard.name}`);
       }
       this.#players[this.#activePlayer].addPick(picks);
-      console.log(this.#players[this.#activePlayer].getPicks());
+      
       this.#position = 0;
 
       if(this.#cardSlots[0].length === 0 && this.#cardSlots[1].length === 0 && this.#cardSlots[2].length === 0 && this.#deck.length == 0){
           return true; //Game is over.
         }
       
+      this.#players[this.#activePlayer].user.send("Waiting for opponent...");
       if(this.#activePlayer === 0){
         this.#players[this.#activePlayer].isActive = false;
         this.#activePlayer = 1;
