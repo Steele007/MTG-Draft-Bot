@@ -37,11 +37,11 @@ class CardPool {
         this.#sortedPool.set("uncommon", arrayToUpdate);
         
         
-      }else if(card.rarity === "rarity"){
+      }else if(card.rarity === "rare"){
 
         let arrayToUpdate = Array.from(this.#sortedPool.get("rare"));
         arrayToUpdate.push(card);
-        this.#sortedPool.set("rarity", arrayToUpdate);
+        this.#sortedPool.set("rare", arrayToUpdate);
         
         
       }else if(card.rarity === "mythic"){
@@ -53,12 +53,7 @@ class CardPool {
         
       }
       
-    }
-
-    for(let card of this.#sortedPool.get("mythic")){
-      console.log(card.name);
-    }
-    
+    }    
     
   }
 

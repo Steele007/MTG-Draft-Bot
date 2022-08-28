@@ -1,6 +1,7 @@
 //const Database = require("@replit/database");
 //const db = new Database();
 //const mongoose = require('mongoose');
+const https = require('https');
 const fetch = require('node-fetch');
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const PlayerRoster = require('./GameClasses/PlayerRoster.js');
@@ -122,8 +123,6 @@ client.on("messageCreate", async (message) => {
               isValid = false;
         }
         
-        console.log("begin wait.");
-        
         //Wait 100 ms so Scryfall doesn't ban my IP address.
         await (async () => {
           await new Promise(resolve => setTimeout(resolve, 150));
@@ -136,9 +135,7 @@ client.on("messageCreate", async (message) => {
 
         let winstonDraft = new WinstonDraft();
         let newPlayer = new WinstonPlayer(message.author);
-        console.log("here");
         await winstonDraft.genCards(inputs);
-        console.log("here again");
         PlayerRoster.addPlayer(newPlayer, message.author);
         winstonDraft.addPlayer(newPlayer)
         searchingForPlayers = true;
@@ -169,7 +166,7 @@ client.on("messageCreate", async (message) => {
       
     }else{
 
-      let newPlayer = new WinstonPlayer();
+      let newPlayer = new WinstonPlayer(message.author);
       if(activeGame.addPlayer(newPlayer)){
           
         searchingForPlayers = false;
@@ -186,18 +183,18 @@ client.on("messageCreate", async (message) => {
   }
 
   //Active player picks current card selection.
-  if(message.content === "Pick" && message.channel.type == 'DM'){
+  if(message.content === "Pick" && message.channel.type === 1){
     
     if(PlayerRoster.allPlayers.has(message.author)){
       
-      let player = PlayerRoster.allPlayers.get(message.author);
-      if(player.isActive){
+      let curPlayer = PlayerRoster.allPlayers.get(message.author);
+      if(curPlayer.isActive){
         
         if(activeGame.pick()){
           let players = activeGame.endGame();
           PlayerRoster.clearPlayers(players);
-          for(player of players){
-            for(card of player.getPicks()){
+          for(let player of players){
+            for(let card of player.getPicks()){
 
               await sendCard(player.user, card);
               
@@ -210,18 +207,18 @@ client.on("messageCreate", async (message) => {
   }
 
   //Active player passes current card selection.
-  if(message.content === "Pass" && message.channel.type == 'DM'){
+  if(message.content === "Pass" && message.channel.type === 1){
     
     if(PlayerRoster.allPlayers.has(message.author)){
       
-      let player = PlayerRoster.allPlayers.get(message.author);
-      if(player.isActive){
+      let curPlayer = PlayerRoster.allPlayers.get(message.author);
+      if(curPlayer .isActive){
         
         if(activeGame.pass()){
           let players = activeGame.endGame();
           PlayerRoster.clearPlayers(players);
-          for(player of players){
-            for(card of player.getPicks()){
+          for(let player of players){
+            for(let card of player.getPicks()){
 
               await sendCard(player.user, card);
               

@@ -9,7 +9,7 @@ class Pack{
     this.#cards = new Set();
     console.log("In pack constructor.");
     
-    if((Math.floor(Math.random() * 8))+ 1 === 1){
+    if(Math.floor(Math.random() * 8)+ 1 === 1){
 
       this.#isMythic = true;
       
@@ -22,11 +22,14 @@ class Pack{
 
     if(this.#isMythic){
 
-      this.#cards.add(cardPool.getMythic());
-      
+      let cardToAdd = cardPool.getMythic();
+      this.#cards.add(cardToAdd);
+      console.log(cardToAdd.name);
     }else{
 
-      this.#cards.add(cardPool.getRare());
+      let cardToAdd = cardPool.getRare();
+      this.#cards.add(cardToAdd);
+      console.log(cardToAdd.name);
       
     }
 
@@ -43,6 +46,7 @@ class Pack{
       }
 
       this.#cards.add(cardToAdd);
+      console.log(cardToAdd.name);
       
     }
 
@@ -57,11 +61,14 @@ class Pack{
       }
 
       this.#cards.add(cardToAdd);
+      console.log(cardToAdd.name);
       
     }
 
     this.#cards.add(cardPool.getLand());
-    //console.log(this.#cards);
+      console.log("land");
+    
+    console.log(this.#cards.size);
   }
 
   removePick(card){
@@ -72,15 +79,15 @@ class Pack{
 
   pickAtRandom(){
 
-    if(this.#cards.length === 0){
+    if(this.#cards.size === 0){
 
       return null;
       
     }else{
 
-      Math.floor(Math.random() * this.#cards.size);
+      let index = Math.floor(Math.random() * this.#cards.size);
 
-      let pick = Array.from(this.#cards.values());
+      let pick = Array.from(this.#cards.values())[index];
 
       this.#cards.delete(pick);
       

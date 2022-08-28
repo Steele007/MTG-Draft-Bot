@@ -1,7 +1,8 @@
-const https = require('https');
+
 const CardPool = require('./CardPool.js');
 const Pack = require('./Pack.js');
 const fetch = require('node-fetch');
+const { EmbedBuilder } = require('discord.js');
 class WinstonDraft{
 
   #deck; //What else do I call it?
@@ -74,32 +75,44 @@ class WinstonDraft{
     //Generate a pack for each of the specified sets.
     for(let set of sets){
 
+      let pack = new Pack(this.#setMap.get(set));
       //console.log(set);
-      this.#packs.push(new Pack(this.#setMap.get(set)));
+      this.#packs.push(pack);
       
     }
-
+    
     await this.#shuffle();
     console.log("Shuffle done.");
-
+   
+    
     //Set up the initial card slots.
-    this.#cardSlots[0].push(this.#deck.pop());
-    this.#cardSlots[1].push(this.#deck.pop());
-    this.#cardSlots[2].push(this.#deck.pop());
+    let newCard = this.#deck.pop();
+    this.#cardSlots[0].push(newCard);
+    newCard = this.#deck.pop();
+    this.#cardSlots[1].push(newCard);
+    newCard = this.#deck.pop();
+    this.#cardSlots[2].push(newCard);
+    console.log(this.#cardSlots[0].name);
+    console.log(this.#cardSlots[1].name);
+    console.log(this.#cardSlots[2].name);
     console.log("Gen done.")
   }
   
   async #shuffle(){
 
+    console.log(this.#packs.length);
     while(this.#cardsInPacks > 0){
 
       //Likelyhood of this repeatedly pinging empty packs towards the end?
-      let card = this.#packs[Math.floor(Math.random()*6)].pickAtRandom();
-
+      let index = Math.floor(Math.random()*6);
+      //console.log("index = " + index);
+      let card = this.#packs[index].pickAtRandom();
+      
       if(card !== null){
-
+        
         this.#cardsInPacks--;
         this.#deck.push(card);
+        //console.log(this.#cardsInPacks);
         
       }
           
@@ -113,7 +126,11 @@ class WinstonDraft{
 
     if(this.#position >= 2){
 
-      this.#players[this.#activePlayer].addPick(this.#deck.pop()) ;
+      let pick = this.#deck.pop();
+      if(pick != null){
+        this.#players[this.#activePlayer].addPick(pick);
+      }
+      
       this.#position = 0;
       if(this.#cardSlots[0].length === 0 && this.#cardSlots[1].length === 0 && this.#cardSlots[2].length === 0 && this.#deck.length == 0){
           return true; //Game is over.
@@ -130,7 +147,10 @@ class WinstonDraft{
       
     }else{
 
-      this.#cardSlots[this.#position].push(this.#deck.pop());
+      let newCard = this.#deck.pop();
+      if(newCard != null){
+        this.#cardSlots[this.#position].push(newCard);
+      }
       this.#position++;
       
     }
@@ -143,9 +163,12 @@ class WinstonDraft{
 
     if(this.#position < 3){
 
-      let picks = Array.from(this.#cardSlots[this.#position]) ;
+      let picks = Array.from(this.#cardSlots[this.#position]);
       this.#cardSlots[this.#position] = [];
-      this.#cardSlots[this.#position].push(this.#deck.pop());
+      let newCard = this.#deck.pop();
+      if(newCard != null){
+        this.#cardSlots[this.#position].push(newCard);     
+      }
       this.#players[this.#activePlayer].addPick(picks);
       this.#position = 0;
 
@@ -187,6 +210,7 @@ class WinstonDraft{
     }else{
 
       this.#players.push(player);
+      //console.log(player);
       return false;
       
     }
@@ -201,9 +225,10 @@ class WinstonDraft{
 
   presentCards(){
 
+    
     this.#players[this.#activePlayer].user.send(`Cards in position ${this.#position}`);
     
-    for(card of this.#cardSlots[this.#position]){
+    for(let card of this.#cardSlots[this.#position]){
 
       if(card.layout == 'transform' || card.layout == 'modal_dfc'){
         let imgLink1 = card.card_faces[0].image_uris.large;
@@ -231,7 +256,8 @@ class WinstonDraft{
 
   #startGame(){
 
-    this.#activePlayer = Math.floor(Math.random*this.#players.length);
+    this.#activePlayer = Math.floor(Math.random()*this.#players.length);
+
     this.#players[this.#activePlayer].isActive = true;
     this.presentCards();
   }
