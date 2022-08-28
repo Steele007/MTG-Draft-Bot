@@ -126,11 +126,15 @@ class WinstonDraft{
 
     if(this.#position >= 2){
 
+      let newCard = this.#deck.pop();
+      if(newCard != null){
+        this.#cardSlots[this.#position].push(newCard);
+      }
       let pick = this.#deck.pop();
       if(pick != null){
         this.#players[this.#activePlayer].addPick(pick);
       }
-      
+      console.log(this.#players[this.#activePlayer].getPicks());
       this.#position = 0;
       if(this.#cardSlots[0].length === 0 && this.#cardSlots[1].length === 0 && this.#cardSlots[2].length === 0 && this.#deck.length == 0){
           return true; //Game is over.
@@ -155,6 +159,7 @@ class WinstonDraft{
       
     }
 
+    this.presentCards();
     return false; //Game will continue
     
   }
@@ -170,6 +175,7 @@ class WinstonDraft{
         this.#cardSlots[this.#position].push(newCard);     
       }
       this.#players[this.#activePlayer].addPick(picks);
+      console.log(this.#players[this.#activePlayer].getPicks());
       this.#position = 0;
 
       if(this.#cardSlots[0].length === 0 && this.#cardSlots[1].length === 0 && this.#cardSlots[2].length === 0 && this.#deck.length == 0){
@@ -188,6 +194,7 @@ class WinstonDraft{
       
     }
 
+    this.presentCards();
     return false; //Game will continue.
     
   }
@@ -226,7 +233,7 @@ class WinstonDraft{
   presentCards(){
 
     
-    this.#players[this.#activePlayer].user.send(`Cards in position ${this.#position}`);
+    this.#players[this.#activePlayer].user.send(`Cards in position ${this.#position + 1}`);
     
     for(let card of this.#cardSlots[this.#position]){
 

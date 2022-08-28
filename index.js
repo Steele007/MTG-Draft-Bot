@@ -3,12 +3,12 @@
 //const mongoose = require('mongoose');
 const https = require('https');
 const fetch = require('node-fetch');
-const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder, Partials } = require('discord.js');
 const PlayerRoster = require('./GameClasses/PlayerRoster.js');
 const WinstonDraft = require('./GameClasses/WinstonDraft.js');
 const WinstonPlayer = require('./GameClasses/WinstonPlayer.js');
 
-const client = new Client({ intents: [GatewayIntentBits.DirectMessages, GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent ] });
+const client = new Client({ intents: [GatewayIntentBits.DirectMessages, GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent ], partials: [Partials.Channel, Partials.Message] });
 
 let searchingForPlayers = false;
 let activeGame = null; //Just one? Expand later
@@ -184,9 +184,10 @@ client.on("messageCreate", async (message) => {
 
   //Active player picks current card selection.
   if(message.content === "Pick" && message.channel.type === 1){
-    
+
+    console.log("here");
     if(PlayerRoster.allPlayers.has(message.author)){
-      
+      console.log("here again");
       let curPlayer = PlayerRoster.allPlayers.get(message.author);
       if(curPlayer.isActive){
         
@@ -208,11 +209,12 @@ client.on("messageCreate", async (message) => {
 
   //Active player passes current card selection.
   if(message.content === "Pass" && message.channel.type === 1){
-    
+
+    console.log("here");
     if(PlayerRoster.allPlayers.has(message.author)){
-      
+      console.log("here again");
       let curPlayer = PlayerRoster.allPlayers.get(message.author);
-      if(curPlayer .isActive){
+      if(curPlayer.isActive){
         
         if(activeGame.pass()){
           let players = activeGame.endGame();
