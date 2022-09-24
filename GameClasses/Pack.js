@@ -9,7 +9,7 @@ class Pack{
     this.#cards = new Set();
     console.log("In pack constructor.");
     
-    if(Math.floor(Math.random() * 8)+ 1 === 1){
+    if(Math.floor(Math.random() * 8)+ 1 === 1 && cardPool.getMythic() != null){
 
       this.#isMythic = true;
       
