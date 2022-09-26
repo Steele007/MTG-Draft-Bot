@@ -1,3 +1,7 @@
+const CardPool = require('./CardPool.js');
+const Pack = require('./Pack.js');
+const fetch = require('node-fetch');
+const { EmbedBuilder } = require('discord.js');
 class WinchesterDraft extends WinstonDraft{
 
   constructor(){
@@ -6,6 +10,77 @@ class WinchesterDraft extends WinstonDraft{
     this.#deck = [[],[]]; //Ignore this and just do a single deck?
   }
 
+  async genCards(sets){
+    
+    //Generate the card pools for each set.
+    for(let set of sets){
+      
+      if(this.#setMap.has(set)){
+
+        //If the cardpool for the set has already been generated, just skip this iteration.
+        
+      }else{
+
+        let j = 1;
+        let cardPool;
+        let setReq = await fetch(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`);
+        let setPool = await setReq.json();
+        //console.log(setPool);
+        cardPool = setPool.data;
+        
+        //While the set still has more JSON files left.
+        while(setPool.has_more == true){
+
+          await (async () => {
+            await new Promise(resolve => setTimeout(resolve, 150));
+          })();
+          j++;
+          let innerReq = await fetch(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`);
+
+          setPool = await innerReq.json();
+          //console.log(setPool);
+          cardPool = cardPool.concat(setPool.data);
+
+          
+                     
+        }
+
+        //Add the cardpool to the map.    
+        this.#setMap.set(set,new CardPool(cardPool))
+        
+      }
+      
+    }
+
+    //Generate a pack for each of the specified sets.
+    for(let set of sets){
+
+      let pack = new Pack(this.#setMap.get(set));
+      //console.log(set);
+      this.#packs.push(pack);
+      
+    }
+    
+    await this.#shuffle();
+    console.log("Shuffle done.");
+   
+    
+    //Set up the initial card slots.
+    let newCard = this.#deck.pop();
+    this.#cardSlots[0].push(newCard);
+    newCard = this.#deck.pop();
+    this.#cardSlots[1].push(newCard);
+    newCard = this.#deck.pop();
+    this.#cardSlots[2].push(newCard);
+    newCard = this.#deck.pop();
+    this.#cardSlots[3].push(newCard);
+    console.log(this.#cardSlots[0].name);
+    console.log(this.#cardSlots[1].name);
+    console.log(this.#cardSlots[2].name);
+    console.log(this.#cardSlots[3].name);
+    console.log("Gen done.")
+  }
+  
   //Edit this.
   async #shuffle(){
 
@@ -14,21 +89,75 @@ class WinchesterDraft extends WinstonDraft{
 
       //Likelyhood of this repeatedly pinging empty packs towards the end?
       let index = Math.floor(Math.random()*6);
-      //console.log("index = " + index);
+      
       let card = this.#packs[index].pickAtRandom();
       
-      if(card !== null){
+      if(index < 3){
+
+        if(card !== null){
         
-        this.#cardsInPacks--;
-        this.#deck.push(card);
-        //console.log(this.#cardsInPacks);
+          this.#cardsInPacks--;
+          this.#deck[0].push(card);
+          //console.log(this.#cardsInPacks);
         
-      }
+        }
+        
+      }else{
+
+        if(card !== null){
+        
+          this.#cardsInPacks--;
+          this.#deck[1].push(card);
+          //console.log(this.#cardsInPacks);
+        
+        }
+        
+      }  
           
     }
 
     //console.log(this.#deck);
     
   }
+
+  async presentCards(){
   
+      for(let i = 0; i<4; i++){
+        
+        this.#players[this.#activePlayer].user.send(`Cards in position ${i + 1}`);
+        
+        for(let card of this.#cardSlots[i]){
+
+        if(card.layout == 'transform' || card.layout == 'modal_dfc'){
+          let imgLink1 = card.card_faces[0].image_uris.large;
+          let imgLink2 = card.card_faces[1].image_uris.large;
+  
+        
+          let cardFrontImg = new EmbedBuilder().setTitle(card.name).setURL(card.scryfall_uri).setImage(imgLink1);
+          let cardBackImg = new EmbedBuilder().setURL(card.scryfall_uri).setImage(imgLink2);
+          
+          this.#players[this.#activePlayer].user.send({embeds: [cardFrontImg, cardBackImg]});
+        }else{
+  
+          let imgLink = card.image_uris.large;
+  
+          let cardImg = new EmbedBuilder().setTitle(card.name).setURL(card.scryfall_uri).setImage(imgLink);
+          this.#players[this.#activePlayer].user.send({embeds: [cardImg]});
+          
+        }
+     
+    }
+      }
+      
+    this.#players[this.#activePlayer].user.send("Pick your Pile.");
+    
+  }
+
+  async pick(){
+    this.#players[this.#activePlayer].user.send("Invalid command.");
+  }
+
+  async pass(){
+    this.#players[this.#activePlayer].user.send("Invalid command.");
+  }
 }
