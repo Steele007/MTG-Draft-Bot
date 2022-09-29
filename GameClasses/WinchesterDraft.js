@@ -9,7 +9,8 @@ class WinchesterDraft extends WinstonDraft{
     this.#cardSlots = [[],[],[],[]];
     this.#deck = [[],[]]; //Ignore this and just do a single deck?
   }
-
+  
+  //Why is this here?
   async genCards(sets){
     
     //Generate the card pools for each set.
@@ -91,7 +92,8 @@ class WinchesterDraft extends WinstonDraft{
       let index = Math.floor(Math.random()*6);
       
       let card = this.#packs[index].pickAtRandom();
-      
+
+    //If it belongs to the first three sets, put it in deck one. Otherwise, put it in deck 2.
       if(index < 3){
 
         if(card !== null){
@@ -157,6 +159,53 @@ class WinchesterDraft extends WinstonDraft{
     this.#players[this.#activePlayer].user.send("Invalid command.");
   }
 
+  async pick(pileNum){
+
+    if(pileNum > 0 && pileNum < 5){
+
+      let picks = Array.from(this.#cardSlots[pileNum-1]);
+      this.#cardSlots[pileNum-1] = [];
+      this.#players[this.#activePlayer].addPick(picks);
+
+      if(this.#cardSlots[0].length === 0 && this.#cardSlots[1].length === 0 && this.#cardSlots[2].length === 0 && this.#cardSlots[3].length === 0){
+        return true; //Game is over.        
+      }
+      
+      for(let i = 0; i < 4; i++){
+
+        let newCard;
+        
+        if(i<2){
+          newCard = this.#deck[0].pop();   
+        }else{
+          newCard = this.#deck[1].pop();
+        }
+
+        if(newCard != null){
+            
+            this.#cardSlots[i].push(newCard);
+            console.log(`Pushed: ${newCard.name}`);
+            
+        }
+
+        if(this.#activePlayer === 0){
+          this.#players[this.#activePlayer].isActive = false;
+          this.#activePlayer = 1;
+          this.#players[this.#activePlayer].isActive = true;
+        }else{
+          this.#players[this.#activePlayer].isActive = false;
+          this.#activePlayer = 0;
+          this.#players[this.#activePlayer].isActive = true;
+        }
+        
+      }
+        
+    }
+
+    await this.presentCards();
+    return false; //Game will continue.
+    
+  }
   async pass(){
     this.#players[this.#activePlayer].user.send("Invalid command.");
   }
