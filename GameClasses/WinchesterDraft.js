@@ -10,7 +10,6 @@ class WinchesterDraft extends WinstonDraft{
     this.#deck = [[],[]]; //Ignore this and just do a single deck?
   }
   
-  //Why is this here?
   async genCards(sets){
     
     //Generate the card pools for each set.
@@ -159,6 +158,7 @@ class WinchesterDraft extends WinstonDraft{
     this.#players[this.#activePlayer].user.send("Invalid command.");
   }
 
+  //Double check this.
   async pick(pileNum){
 
     if(pileNum > 0 && pileNum < 5){
@@ -206,7 +206,9 @@ class WinchesterDraft extends WinstonDraft{
     return false; //Game will continue.
     
   }
+  
   async pass(){
     this.#players[this.#activePlayer].user.send("Invalid command.");
   }
 }
+module.exports = WinchesterDraft;

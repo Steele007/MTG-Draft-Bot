@@ -214,6 +214,9 @@ class WinstonDraft{
     
   }
 
+  async pick(num){
+    this.#players[this.#activePlayer].user.send("Invalid command.");
+  }
   addPlayer(player){
 
     //Return values tell the bot when to stop letting people join the game.
