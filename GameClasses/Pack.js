@@ -97,6 +97,10 @@ class Pack{
     }
     
   }
+
+  getCards(){
+    return this.#cards;
+  }
   
 }
 module.exports = Pack;
