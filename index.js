@@ -7,6 +7,9 @@ const { Client, GatewayIntentBits, EmbedBuilder, Partials } = require('discord.j
 const PlayerRoster = require('./GameClasses/PlayerRoster.js');
 const WinstonDraft = require('./GameClasses/WinstonDraft.js');
 const WinstonPlayer = require('./GameClasses/WinstonPlayer.js');
+const Sealed = require('./GameClasses/SealedPool.js');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const client = new Client({ intents: [GatewayIntentBits.DirectMessages, GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent ], partials: [Partials.Channel, Partials.Message] });
 
@@ -110,7 +113,7 @@ client.on("messageCreate", async (message) => {
       return;
     }
     
-    inputs = message.content.split(" ");
+    let inputs = message.content.split(" ");
     inputs.shift();
     let isValid = true;
     
@@ -248,10 +251,50 @@ client.on("messageCreate", async (message) => {
     }
     
   }
+
+  //Opens a Sealed pool for a user.
+  if(message.content.startsWith("Sealed: ")){
+
+    let inputs = message.content.split(" ");
+    inputs.shift();
+    let isValid = true;
+    
+    if(inputs.length !== 6){
+      message.reply("Must specify the set used by each booster.\n Format: Sealed: setCode setCode setCode setCode setCode setCode");
+    }else{
+      
+      for(let set of inputs){
+        let setGet = await fetch(`https://api.scryfall.com/sets/${set}`);
+        let data = await setGet.json();
+
+        if(data.object === "error"){
+              isValid = false;
+        }
+        
+        //Wait 100 ms so Scryfall doesn't ban my IP address.
+        await (async () => {
+          await new Promise(resolve => setTimeout(resolve, 150));
+        })();
+        
+        
+      }
+
+      if(isValid){
+
+        await Sealed.getCardPool(inputs, message.author);
+        
+      }else{
+
+        message.reply("One or more set codes are invalid.");
+        
+      }
+    }
+    
+  }
 });
 
 console.log("About to login.");
-//console.log(PlayerRoster);         
+        
 client.login(mySecret);
 
 

@@ -2,6 +2,9 @@ const CardPool = require('./CardPool.js');
 const Pack = require('./Pack.js');
 const fetch = require('node-fetch');
 const { EmbedBuilder } = require('discord.js');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
 class SealedPool{
 
   //Just prints out all the cards in a sealed pool. 
@@ -19,6 +22,7 @@ class SealedPool{
         
       }else{
 
+        /*
         let j = 1;
         let cardPool;
         let setReq = await fetch(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`);
@@ -38,13 +42,14 @@ class SealedPool{
           setPool = await innerReq.json();
           //console.log(setPool);
           cardPool = cardPool.concat(setPool.data);
-
-          
-                     
+                    
         }
+        */
 
+        let newCardPool = await CardPool.makeCardPool(set);
+        
         //Add the cardpool to the map.    
-        setMap.set(set,new CardPool(cardPool))
+        setMap.set(set, newCardPool);
         
       }
       

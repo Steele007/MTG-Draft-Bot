@@ -3,7 +3,8 @@ class Pack{
 
   #isMythic;
   #cards;
-  
+
+  //TO DO: Add code to recognize if a set has no mythics. 
   constructor(cardPool){
     
     this.#cards = new Set();
@@ -18,7 +19,8 @@ class Pack{
       this.#isMythic = false;
       
     }
-    
+
+    if(){}
 
     if(this.#isMythic){
 

@@ -41,6 +41,7 @@ class WinstonDraft{
         
       }else{
 
+        /*
         let j = 1;
         let cardPool;
         let setReq = await fetch(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`);
@@ -64,9 +65,12 @@ class WinstonDraft{
           
                      
         }
+        */
+
+        let newCardPool = await CardPool.makeCardPool(set);
 
         //Add the cardpool to the map.    
-        this.#setMap.set(set,new CardPool(cardPool))
+        this.#setMap.set(set, newCardPool);
         
       }
       
