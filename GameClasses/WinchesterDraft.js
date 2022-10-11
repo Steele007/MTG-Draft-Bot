@@ -21,32 +21,6 @@ class WinchesterDraft extends WinstonDraft{
         
       }else{
 
-        /*
-        let j = 1;
-        let cardPool;
-        let setReq = await fetch(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`);
-        let setPool = await setReq.json();
-        //console.log(setPool);
-        cardPool = setPool.data;
-        
-        //While the set still has more JSON files left.
-        while(setPool.has_more == true){
-
-          await (async () => {
-            await new Promise(resolve => setTimeout(resolve, 150));
-          })();
-          j++;
-          let innerReq = await fetch(`https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&page=${j}&q=e%3A${set}&unique=prints`);
-
-          setPool = await innerReq.json();
-          //console.log(setPool);
-          cardPool = cardPool.concat(setPool.data);
-
-          
-                     
-        }
-        */
-
         let newCardPool = await CardPool.makeCardPool(set);
         
         //Add the cardpool to the map.    
@@ -154,7 +128,7 @@ class WinchesterDraft extends WinstonDraft{
     }
       }
       
-    this.#players[this.#activePlayer].user.send("Pick your Pile.");
+    this.#players[this.#activePlayer].user.send("Pick your Pile./nType 'Show Cards' to see your picks.");
     
   }
 
@@ -204,6 +178,10 @@ class WinchesterDraft extends WinstonDraft{
         
       }
         
+    }else{
+
+      this.#players[this.#activePlayer].user.send("Enter a value between 1 and 4.");
+      
     }
 
     await this.presentCards();

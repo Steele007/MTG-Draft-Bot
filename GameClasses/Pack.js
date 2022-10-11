@@ -20,8 +20,6 @@ class Pack{
       
     }
 
-    if(){}
-
     if(this.#isMythic){
 
       let cardToAdd = cardPool.getMythic();
