@@ -9,6 +9,8 @@ class BaseDraft{
     
     this.#gameStart = false;
     this.#players = [];
+    this.#packs = [];
+    this.#setMap = new Map();
     
   }
 
@@ -25,15 +27,15 @@ class BaseDraft{
   }
   
   async pick(){
-    this.#players[this.#activePlayer].user.send("Invalid command.");
+    return false;
   }
 
   async pick(num){
-    this.#players[this.#activePlayer].user.send("Invalid command.");
+    return false;
   }
 
   async pass(){
-    this.#players[this.#activePlayer].user.send("Invalid command.");
+    return false;
   }
 
   async presentCards(){

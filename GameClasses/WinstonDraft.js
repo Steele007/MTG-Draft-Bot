@@ -1,29 +1,23 @@
 
 const CardPool = require('./CardPool.js');
+const BaseDraft = require('./BaseDraft.js');
 const Pack = require('./Pack.js');
 const fetch = require('node-fetch');
 const { EmbedBuilder } = require('discord.js');
-class WinstonDraft{
+class WinstonDraft extends BaseDraft{
 
   #deck; //What else do I call it?
-  #packs;
-  #players;
-  #setMap;
   #cardSlots;
   #cardsInPacks;
-  #gameStart;
   #activePlayer;
   #position; //The position of the card pile the active player is looking at.
   
   
   constructor(){
 
-    this.#gameStart = false;
+    super();
     this.#deck = [];
     this.#cardSlots = [[],[],[]];
-    this.#setMap = new Map();
-    this.#players = [];
-    this.#packs = [];
     this.#position = 0;
     this.#cardsInPacks = 90; //Hardcode different number for sets like Double Masters? 
    
@@ -192,9 +186,6 @@ class WinstonDraft{
     
   }
 
-  async pick(num){
-    this.#players[this.#activePlayer].user.send("Invalid command.");
-  }
   addPlayer(player){
 
     //Return values tell the bot when to stop letting people join the game.

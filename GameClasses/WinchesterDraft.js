@@ -1,6 +1,7 @@
 const CardPool = require('./CardPool.js');
 const Pack = require('./Pack.js');
 const fetch = require('node-fetch');
+const WinstonDraft = require('./WinstonDraft.js');
 const { EmbedBuilder } = require('discord.js');
 class WinchesterDraft extends WinstonDraft{
 
@@ -133,7 +134,7 @@ class WinchesterDraft extends WinstonDraft{
   }
 
   async pick(){
-    this.#players[this.#activePlayer].user.send("Invalid command.");
+    return false;
   }
 
   //Double check this.
@@ -190,7 +191,7 @@ class WinchesterDraft extends WinstonDraft{
   }
   
   async pass(){
-    this.#players[this.#activePlayer].user.send("Invalid command.");
+    return false;
   }
 }
 module.exports = WinchesterDraft;
