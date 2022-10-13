@@ -1,15 +1,16 @@
 const Player = require('./Player.js');
 class WinstonPlayer extends Player{
 
-  #picks;
+  //#picks;
   
   constructor(user){
 
     super(user);
-    this.#picks = [];
+    //this.#picks = [];
     
   }
 
+  /*
   addPick(pick){
 
     if(Array.isArray(pick) ){
@@ -26,6 +27,7 @@ class WinstonPlayer extends Player{
     return this.#picks;
     
   }
-  
+  */
 }
+
 module.exports = WinstonPlayer;

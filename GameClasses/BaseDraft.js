@@ -42,9 +42,9 @@ class BaseDraft{
     
   }
   
-   #startGame(){
+  #startGame(){
      
-   }
+  }
   
 }
 module.exports = BaseDraft;

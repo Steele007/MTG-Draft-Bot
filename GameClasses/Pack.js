@@ -74,7 +74,7 @@ class Pack{
 
   removePick(card){
 
-    //Fill later (probably for the full draft).
+    this.#cards.delete(card);
     
   }
 
